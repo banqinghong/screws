@@ -45,5 +45,5 @@ hostname >> hostname.bak
 cp /etc/hosts ./hosts.bak
 
 # 备份 profile 文件
-cp /etc/profile
+cat /etc/profile  >> profile.bak
 
