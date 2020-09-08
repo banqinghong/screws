@@ -37,3 +37,13 @@ func GetAvgOfIntList(s []int) (avg float64)  {
 	avg = float64(sum) / float64(len(s))
 	return Float2float(avg, 4)
 }
+
+// 判断切片中某个元素是否存在
+func IsExistInt (i int, s []int) (res bool){
+	for _, v := range s {
+		if v == i {
+			return true
+		}
+	}
+	return false
+}

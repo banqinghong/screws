@@ -50,3 +50,13 @@ func GetAvgOfFloatList(s []float64) (avg float64)  {
 	avg = sum / float64(len(s))
 	return Float2float(avg, 4)
 }
+
+// 判断切片中某个元素是否存在
+func IsExistFloat (i float64, s []float64) (res bool){
+	for _, v := range s {
+		if v == i {
+			return true
+		}
+	}
+	return false
+}
