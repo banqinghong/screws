@@ -10,5 +10,5 @@ func main() {
 	fmt.Println("main starting")
 	s := []float64{1, 3, 3}
 	fmt.Println("sum: ", number.GetAvgOfFloatList(s))
-	bfile.ReadFile("/tmp/test.txt", 4)
+	bfile.ReadFileLine("/tmp/test.txt")
 }
