@@ -3,6 +3,8 @@ package bfile
 import (
 	"bufio"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 )
 
@@ -50,4 +52,25 @@ func ReadFileLine(fileName string) {
 	if err != nil {
 		fmt.Printf("scan file %s error %s\n", fileName, err.Error())
 	}
+}
+
+// 下载文件
+func DownloadFromRemote(url, fileName string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = io.Copy(file, resp.Body)
+	if err != nil {
+		return err
+	}
+	return nil
 }
