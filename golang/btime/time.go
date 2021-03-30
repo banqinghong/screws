@@ -25,3 +25,13 @@ func String2Time(timeString string) (time.Time, error) {
 	st, err := time.Parse(tt, timeString)
 	return st, err
 }
+
+// 获取当前时刻的n月前第一天
+func AddDate(t time.Time, years int, months int) time.Time {
+	year, month, _ := t.Date()
+	hour, min, sec := t.Clock()
+	// AddDate后月份的第一天
+	firstDayOfMonthAfterAddDate := time.Date(year+years, month+time.Month(months), 1,
+		hour, min, sec, t.Nanosecond(), t.Location())
+	return firstDayOfMonthAfterAddDate
+}
