@@ -12,7 +12,9 @@ require (
 	github.com/alibabacloud-go/tea-xml v1.1.2 // indirect
 	github.com/alibabacloud-go/waf-openapi-20190910 v1.1.8 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.15.12 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.12.7 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.47.1 // indirect
 	github.com/clbanning/mxj/v2 v2.5.5 // indirect
 	github.com/confluentinc/confluent-kafka-go v1.8.2
+	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.0.97 // indirect
 )

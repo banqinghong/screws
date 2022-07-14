@@ -2,16 +2,18 @@ package aws
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-
+	"github.com/alibabacloud-go/tea/tea"
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 )
 
 func NewClient() *ec2.Client {
 	staticCredentialsProvider := credentials.NewStaticCredentialsProvider(AccessKeyId, SecretAccessKey, SessionToken)
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithCredentialsProvider(staticCredentialsProvider))
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithCredentialsProvider(staticCredentialsProvider),
+		config.WithDefaultRegion("ap-northeast-1"))
 	if err != nil {
 		panic("configuration error, " + err.Error())
 	}
@@ -40,25 +42,101 @@ func GetInstances(c context.Context, api EC2DescribeInstancesAPI, input *ec2.Des
 	return api.DescribeInstances(c, input)
 }
 
+func withRegion(region string) func(options *ec2.Options) {
+	return func(options *ec2.Options) {
+		options.Region = region
+	}
+}
+
+func limit(num int32) func(options *ec2.DescribeInstancesPaginatorOptions) {
+	return func(options *ec2.DescribeInstancesPaginatorOptions) {
+		options.Limit = num
+	}
+}
+
+func limitHost(num int32) func(options *ec2.DescribeHostsPaginatorOptions) {
+	return func(options *ec2.DescribeHostsPaginatorOptions) {
+		options.Limit = num
+	}
+}
+
 func ListInstances() {
 	client := NewClient()
-
 	input := &ec2.DescribeInstancesInput{}
 
-	result, err := GetInstances(context.TODO(), client, input)
-	if err != nil {
-		fmt.Println("Got an error retrieving information about your Amazon EC2 instances:")
-		fmt.Println(err)
-		return
-	}
-
-	for _, r := range result.Reservations {
-		fmt.Println("Reservation ID: " + *r.ReservationId)
-		fmt.Println("Instance IDs:")
-		for _, i := range r.Instances {
-			fmt.Println("   " + *i.InstanceId)
+	inputPage := ec2.NewDescribeInstancesPaginator(client, input, limit(5))
+	i := 0
+	count := 0
+	for {
+		result, err := inputPage.NextPage(context.TODO(), withRegion("ap-northeast-1"))
+		if err != nil {
+			fmt.Println("query error: ", err)
+			return
 		}
 
-		fmt.Println("")
+		//jsonStr, _ := json.Marshal(result)
+		//fmt.Println("result: ", string(jsonStr))
+		for _, item := range result.Reservations {
+			count += len(item.Instances)
+		}
+		fmt.Printf("第%d次查询，结果长度：%d\n", i, count)
+		i++
+
+	}
+
+
+	//result, err := client.DescribeInstances(context.TODO(), input, withRegion("ap-northeast-1"))
+	//if err != nil {
+	//	fmt.Println("Got an error retrieving information about your Amazon EC2 instances:")
+	//	fmt.Println(err)
+	//	return
+	//}
+	//
+	//for _, r := range result.Reservations {
+	//	fmt.Println("Reservation ID: " + *r.ReservationId)
+	//	fmt.Println("Instance IDs:")
+	//	for _, i := range r.Instances {
+	//		fmt.Println("   " + *i.InstanceId)
+	//	}
+	//
+	//	fmt.Println("")
+	//}
+}
+
+func ListRegions(){
+	client := NewClient()
+	input := &ec2.DescribeRegionsInput{
+		AllRegions: tea.Bool(true),
+	}
+	output, err := client.DescribeRegions(context.TODO(), input)
+	if err != nil {
+		fmt.Println(err)
+	}
+	jsonStr, _ := json.Marshal(output)
+	fmt.Println(string(jsonStr))
+}
+
+func ListHosts(){
+	client := NewClient()
+	input := &ec2.DescribeHostsInput{}
+
+	inputPage := ec2.NewDescribeHostsPaginator(client, input, limitHost(5))
+	i := 0
+	count := 0
+	for {
+		result, err := inputPage.NextPage(context.TODO(), withRegion("ap-northeast-1"))
+		if err != nil {
+			fmt.Println("query error: ", err)
+			return
+		}
+
+		jsonStr, _ := json.Marshal(result)
+		fmt.Println("result: ", string(jsonStr))
+		for _, item := range result.Hosts {
+			count += len(item.Instances)
+		}
+		fmt.Printf("第%d次查询，结果长度：%d\n", i, count)
+		i++
+
 	}
 }

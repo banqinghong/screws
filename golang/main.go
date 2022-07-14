@@ -1,6 +1,8 @@
 package main
 
-import "github.com/banqinghong/screws/golang/aws"
+import (
+	"github.com/banqinghong/screws/golang/huawei"
+)
 
 func main() {
 	//fmt.Println("main starting")
@@ -17,6 +19,6 @@ func main() {
 	//if err != nil {
 	//	fmt.Println(err)
 	//}
-	aws.ListInstances()
+	huawei.ListRegions()
 }
 
