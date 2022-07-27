@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/banqinghong/screws/golang/huawei"
+	"github.com/banqinghong/screws/golang/tencent"
 )
 
 func main() {
@@ -19,6 +19,10 @@ func main() {
 	//if err != nil {
 	//	fmt.Println(err)
 	//}
-	huawei.ListRegions()
+	//huawei.ListEcs()
+	//ali.DescribeChangeLogs()
+	tencent.DescribeDomainLog()
+	//aws.ListInstances()
+	//ali.DescribeChangeLogs()
 }
 

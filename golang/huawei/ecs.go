@@ -7,7 +7,6 @@ import (
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/global"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/config"
-	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/httphandler"
 	ecs "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/ecs/v2"
 
 	bss "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/bss/v2"
@@ -19,10 +18,7 @@ import (
 
 func NewEcsClientBuilder() *core.HcHttpClientBuilder {
 	credentials := basic.NewCredentialsBuilder().WithAk(AccessKey).WithSk(AccessSecret).Build()
-	httpConfig := config.DefaultHttpConfig().WithHttpHandler(httphandler.
-		NewHttpHandler().
-		AddRequestHandler(RequestHandler).
-		AddResponseHandler(ResponseHandler))
+	httpConfig := config.DefaultHttpConfig()
 	builder := ecs.EcsClientBuilder().WithCredential(credentials).WithHttpConfig(httpConfig)
 	//client := ecs.NewEcsClient(
 	//	ecs.EcsClientBuilder().WithRegion(region.CN_NORTH_1).
@@ -37,16 +33,34 @@ func NewEcsClientBuilder() *core.HcHttpClientBuilder {
 }
 
 func ListEcs() {
-	client := ecs.NewEcsClient(NewEcsClientBuilder().WithRegion(region.CN_NORTH_1).Build())
-	//client.HcClient.WithEndpoint(region.CN_NORTH_1.Endpoint)
+	builder := NewEcsClientBuilder()
+	for _, ecsRegionID := range EcsSupportedRegions {
+		ecsRegion := region.ValueOf(ecsRegionID)
+		builder := builder.WithRegion(ecsRegion)
+		builder.WithCredential(basic.NewCredentialsBuilder().WithAk(AccessKey).WithSk(AccessSecret).Build())
+		client := ecs.NewEcsClient(builder.Build())
+		//client.HcClient.WithEndpoint(region.CN_NORTH_1.Endpoint)
+		//client := ecs.NewEcsClient(
+		//	ecs.EcsClientBuilder().WithRegion(region.CN_NORTH_1).
+		//		WithCredential(
+		//			basic.NewCredentialsBuilder().
+		//				WithAk(AccessKey).
+		//				WithSk(AccessSecret).
+		//				Build()).
+		//		WithHttpConfig(config.DefaultHttpConfig().
+		//			WithIgnoreSSLVerification(true)).
+		//		WithRegion(ecsRegion).Build())
 
-	request := &model.ListServersDetailsRequest{}
-	resp, err := client.ListServersDetails(request)
-	if err != nil {
-		fmt.Println("list err: ", err)
-		return
+		request := &model.ListServersDetailsRequest{}
+		resp, err := client.ListServersDetails(request)
+		if err != nil {
+			fmt.Printf("list region[%s] error: %s \n", ecsRegionID, err)
+			continue
+		}
+		fmt.Println("successful: ", resp.HttpStatusCode)
 	}
-	fmt.Println(resp.String())
+	// ec04e08afbb94a1889ec2d9617db62b0
+
 }
 
 //func DescribeEcs() {

@@ -64,7 +64,7 @@ func ListInstances() {
 	client := NewClient()
 	input := &ec2.DescribeInstancesInput{}
 
-	inputPage := ec2.NewDescribeInstancesPaginator(client, input, limit(5))
+	inputPage := ec2.NewDescribeInstancesPaginator(client, input, limit(50))
 	i := 0
 	count := 0
 	for {
