@@ -2,6 +2,7 @@ package tencent
 
 import (
 	"fmt"
+	"github.com/alibabacloud-go/tea/tea"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/regions"
@@ -26,7 +27,7 @@ func DescribeDomains()(){
 	request := dnspod.NewDescribeDomainListRequest()
 	resp, err := client.DescribeDomainList(request)
 	if err != nil {
-		fmt.Println("query domian list error: ", err)
+		fmt.Println("query domain list error: ", err)
 		return
 	}
 	fmt.Println("domain: ", resp.ToJsonString())
@@ -53,4 +54,20 @@ func DescribeDomainLog()  {
 		fmt.Println("log resp: ")
 		fmt.Println(logResp.ToJsonString())
 	}
+}
+
+func DescribeDomainRecords()(){
+	client, _ :=  NewDnsPodClient()
+	request := dnspod.NewDescribeRecordListRequest()
+	limit := uint64(1000)
+	domainID := uint64(3091997)
+	request.Limit = &limit
+	request.Domain = tea.String("xgimi.com")
+	request.DomainId = &domainID
+	resp, err := client.DescribeRecordList(request)
+	if err != nil {
+		fmt.Println("query domain list error: ", err)
+		return
+	}
+	fmt.Println("domain: ", resp.ToJsonString())
 }

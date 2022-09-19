@@ -174,6 +174,32 @@ func ListGatewayDomain () (_err error) {
 	return _err
 }
 
+func ListGatewayRoute () (_err error) {
+	client, _err := CreateGWClient(tea.String(AccessKey), tea.String(AccessSecret))
+	if _err != nil {
+		return _err
+	}
+
+	filterParams := &mse20190531.ListGatewayRouteRequestFilterParams{
+		GatewayUniqueId: tea.String(GatewayID),
+		DomainName:      tea.String("devcloud-gateway-test-202205101436.dev.xgimi.com"),
+		Status:          tea.Int32(1),
+	}
+
+	listGatewayRouteRequest := &mse20190531.ListGatewayRouteRequest{
+		FilterParams: filterParams,
+	}
+	// 复制代码运行请自行打印 API 的返回值
+	result, _err := client.ListGatewayRoute(listGatewayRouteRequest)
+	if _err != nil {
+		return _err
+	}
+	//domainID := tea.Int64Value(result.Body.Data)
+	fmt.Println(result)
+
+	return _err
+}
+
 func ListSSLCert () (_err error) {
 	client, _err := CreateGWClient(tea.String(AccessKey), tea.String(AccessSecret))
 	if _err != nil {

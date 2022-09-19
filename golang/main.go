@@ -1,8 +1,14 @@
 package main
 
 import (
-	"github.com/banqinghong/screws/golang/tencent"
+	"fmt"
+	"github.com/banqinghong/screws/golang/ali"
+	"time"
 )
+
+func test()  {
+	time.Sleep(5 * time.Second)
+}
 
 func main() {
 	//fmt.Println("main starting")
@@ -15,14 +21,15 @@ func main() {
 	//fmt.Println(lastMonth)
 	//kafka.ConsumerTest(11)
 	//_ = ali.DescribeInstanceStatus()
-	//err := ali.DescribeWafInfo()
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
+	err := ali.ListRds()
+	if err != nil {
+		fmt.Println(err)
+	}
 	//huawei.ListEcs()
 	//ali.DescribeChangeLogs()
-	tencent.DescribeDomainLog()
+	//tencent.DescribeDomainRecords()
 	//aws.ListInstances()
 	//ali.DescribeChangeLogs()
+
 }
 

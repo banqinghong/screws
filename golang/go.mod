@@ -3,11 +3,13 @@ module github.com/banqinghong/screws/golang
 go 1.16
 
 require (
+	github.com/360EntSecGroup-Skylar/excelize v1.4.1 // indirect
 	github.com/Shopify/sarama v1.34.1
 	github.com/alibabacloud-go/darabonba-openapi v0.1.18
 	github.com/alibabacloud-go/ecs-20140526/v2 v2.1.3
 	github.com/alibabacloud-go/mse-20190531/v3 v3.0.23
 	github.com/alibabacloud-go/pvtz-20180101 v1.0.0
+	github.com/alibabacloud-go/rds-20140815/v2 v2.1.1 // indirect
 	github.com/alibabacloud-go/tea v1.1.19
 	github.com/alibabacloud-go/waf-openapi-20190910 v1.1.8
 	github.com/aws/aws-sdk-go-v2/config v1.15.14
