@@ -6,6 +6,8 @@ import (
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
 	pvtz20180101 "github.com/alibabacloud-go/pvtz-20180101/client"
 	"github.com/alibabacloud-go/tea/tea"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -32,6 +34,22 @@ func CreateDnsClient (accessKeyId *string, accessKeySecret *string) (_result *pv
 }
 
 func DescribeZones () (_err error) {
+	client, _err := CreateDnsClient(tea.String(ReadOnlyAccessKey), tea.String(ReadOnlyAccessSecret))
+	if _err != nil {
+		return _err
+	}
+
+	describeZonesRequest := &pvtz20180101.DescribeZonesRequest{}
+	// 复制代码运行请自行打印 API 的返回值
+	resp, _err := client.DescribeZones(describeZonesRequest)
+	if _err != nil {
+		return _err
+	}
+	fmt.Println(resp.String())
+	return _err
+}
+
+func DescribeZonesVpc () (_err error) {
 	client, _err := CreateDnsClient(tea.String(ReadOnlyAccessKey), tea.String(ReadOnlyAccessSecret))
 	if _err != nil {
 		return _err
@@ -102,7 +120,7 @@ func DescribeChangeLogs () {
 
 
 	for _, v := range zoneResp.Body.Zones.Zone {
-		fmt.Println(tea.StringValue(v.ZoneName))
+		//fmt.Println(tea.StringValue(v.ZoneName))
 		endTime := time.Now().UnixNano() / 1e6
 		startTime := time.Now().Add(-24 * time.Hour).UnixNano()/1e6
 		describeRecordLogs := &pvtz20180101.DescribeChangeLogsRequest{
@@ -110,14 +128,37 @@ func DescribeChangeLogs () {
 			EndTimestamp: tea.Int64(endTime),
 			StartTimestamp: tea.Int64(startTime),
 		}
-		fmt.Println("req: ", describeRecordLogs.String())
+		//fmt.Println("req: ", describeRecordLogs.String())
 		resp, _err := client.DescribeChangeLogs(describeRecordLogs)
 		if _err != nil {
 			fmt.Println("query error: ", _err)
 			return
 		}
-		fmt.Println(resp.Body.String())
+		//fmt.Println(resp.Body.String())
+		for _, changeLog := range resp.Body.ChangeLogs.ChangeLog {
+			if tea.StringValue(changeLog.OperAction) == "Remove" {
+				domainLogList := strings.Split(tea.StringValue(changeLog.Content), " ")
+				if len(domainLogList) < 5 {
+					fmt.Errorf("")
+					continue
+				}
+				domainName := ConvertDomainLogInfo(domainLogList[1]) + "." + tea.StringValue(v.ZoneName)
+				recordType := ConvertDomainLogInfo(domainLogList[2])
+				ttl, _ := strconv.Atoi(ConvertDomainLogInfo(domainLogList[3]))
+				value := ConvertDomainLogInfo(domainLogList[4])
+				fmt.Printf("%s %s %d %s\n", domainName, recordType, ttl, value)
+			}
+		}
 	}
+}
+
+func ConvertDomainLogInfo(logInfo string) string {
+	// key:value
+	logInfoList := strings.Split(logInfo, ":")
+	if len(logInfoList) < 2 {
+		return ""
+	}
+	return logInfoList[1]
 }
 
 

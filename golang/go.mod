@@ -16,7 +16,10 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.12.9
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.49.1
 	github.com/confluentinc/confluent-kafka-go v1.9.1
-	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.0.98
+	github.com/go-ldap/ldap/v3 v3.4.4 // indirect
+	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.7
+	github.com/infraboard/mcube v1.9.2 // indirect
+	github.com/miekg/dns v1.1.49 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.446
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.0.446
 )

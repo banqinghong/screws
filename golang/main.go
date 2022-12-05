@@ -2,16 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/banqinghong/screws/golang/ali"
-	"time"
+	"github.com/banqinghong/screws/golang/ldap"
 )
 
-func test()  {
-	time.Sleep(5 * time.Second)
-}
-
 func main() {
-	//fmt.Println("main starting")
+	fmt.Println("main starting")
 	//s := []float64{1, 3, 3}
 	//fmt.Println("sum: ", number.GetAvgOfFloatList(s))
 	//bfile.ReadFileLine("/tmp/test.txt")
@@ -21,15 +16,25 @@ func main() {
 	//fmt.Println(lastMonth)
 	//kafka.ConsumerTest(11)
 	//_ = ali.DescribeInstanceStatus()
-	err := ali.ListRds()
-	if err != nil {
-		fmt.Println(err)
-	}
-	//huawei.ListEcs()
+	//err := ali.DescribeZonesVpc()
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//ali.DescribeChangeLogs()
+	//huawei.ImportMicroService()
+	//huawei.CreateApigRoute()
 	//ali.DescribeChangeLogs()
 	//tencent.DescribeDomainRecords()
 	//aws.ListInstances()
 	//ali.DescribeChangeLogs()
-
+	//ldap.ExampleSearch()
+	ldap.Run()
+	//cname, err := net.LookupCNAME("k8s-pub-tokyo-prometheus-i.xgimi.com")
+	//if err != nil {
+	//	log.Printf("query domain record failed: %s\n", err)
+	//} else {
+	//	fmt.Printf("%v\n", cname)
+	//}
+	fmt.Printf("process ending\n")
 }
 

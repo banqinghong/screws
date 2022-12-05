@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 )
@@ -73,4 +74,62 @@ func DownloadFromRemote(url, fileName string) error {
 		return err
 	}
 	return nil
+}
+
+func checkFileIsExist(filename string) bool {
+	var exist = true
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		exist = false
+	}
+	return exist
+}
+
+func Append2File(content, filename string) {
+	openType := os.O_WRONLY|os.O_APPEND
+	if ! checkFileIsExist(filename) {
+		openType = os.O_WRONLY|os.O_CREATE
+	}
+	file, err := os.OpenFile(filename, openType, 0644)
+	if err != nil {
+		fmt.Println("文件打开失败", err)
+		return
+	}
+	//及时关闭file句柄
+	defer file.Close()
+	//写入文件时，使用带缓存的 *Writer
+	write := bufio.NewWriter(file)
+	_, err = write.WriteString(content)
+	if err != nil {
+		log.Printf("write content[%s] failed: %s", content, err)
+		return
+	}
+	//Flush将缓存的文件真正写入到文件中
+	err = write.Flush()
+	if err != nil {
+		log.Printf("flush content[%s] failed: %s", content, err)
+		return
+	}
+}
+
+func Write2NewFile(content, filename string) {
+	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		fmt.Println("文件打开失败", err)
+		return
+	}
+	//及时关闭file句柄
+	defer file.Close()
+	//写入文件时，使用带缓存的 *Writer
+	write := bufio.NewWriter(file)
+	_, err = write.WriteString(content)
+	if err != nil {
+		log.Printf("write content[%s] failed: %s", content, err)
+		return
+	}
+	//Flush将缓存的文件真正写入到文件中
+	err = write.Flush()
+	if err != nil {
+		log.Printf("flush content[%s] failed: %s", content, err)
+		return
+	}
 }
