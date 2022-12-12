@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/banqinghong/screws/golang/ldap"
 )
 
 func main() {
@@ -28,13 +27,18 @@ func main() {
 	//aws.ListInstances()
 	//ali.DescribeChangeLogs()
 	//ldap.ExampleSearch()
-	ldap.Run()
+	//ldap.Run()
 	//cname, err := net.LookupCNAME("k8s-pub-tokyo-prometheus-i.xgimi.com")
 	//if err != nil {
 	//	log.Printf("query domain record failed: %s\n", err)
 	//} else {
 	//	fmt.Printf("%v\n", cname)
 	//}
+	//v4, _ := uuid.NewV4()
+	//
+	//fmt.Println(v4.String())
+	str := "12345"
+	fmt.Println(str[0:3])
 	fmt.Printf("process ending\n")
 }
 

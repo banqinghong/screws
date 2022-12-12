@@ -95,7 +95,6 @@ func (s *service) QueryDomainRecord(zone string) {
 	//fmt.Println("json: ", string(jsonStr))
 	for _, entry := range sr.Entries {
 		if len(entry.Attributes) < 1 {
-			// JM IT GMPC GMLC
 			nameByDN, err := getDomainNameByDN(entry.DN)
 			if err != nil {
 				fmt.Printf("get name by dn[%s] failed: %s\n", entry.DN, err)
@@ -124,7 +123,7 @@ func (s *service) QueryDomainRecord(zone string) {
 	}
 }
 
-// 过滤 JM IT GMPC GMLC 开头的办公网机器地址
+// 过滤 JM IT等开头的办公网机器地址
 func isHostName (nameByDN string) (bool, error) {
 	return regexp.Match("^(JM|IT|GM|YBIT|jm|YB|it20|WIN|VDI).*", []byte(nameByDN))
 }
@@ -197,7 +196,7 @@ func queryDomainInfo(domain string) (*domainInfo, error) {
 		domainInfo.Type = "A"
 		domainInfo.Address = record.A.String()
 	case *dns.CNAME:
-		domainInfo.Type = "A"
+		domainInfo.Type = "CNAME"
 		domainInfo.Address = record.Target
 	default:
 		fmt.Println("answer", r.Answer[0].String())
