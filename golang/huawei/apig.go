@@ -2,6 +2,7 @@ package huawei
 
 import (
 	"fmt"
+
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
@@ -16,6 +17,82 @@ func NewApigClientBuilder() *core.HcHttpClientBuilder {
 	httpConfig := config.DefaultHttpConfig()
 	builder := apig.ApigClientBuilder().WithCredential(credentials).WithHttpConfig(httpConfig)
 	return builder
+}
+
+func ListAllApis() {
+	limit := 100
+	offset := 0
+	var apiSet []model.ApiInfoPerPage
+	for {
+		apis, err := ListApisV2(int32(offset), int32(limit))
+		if err != nil {
+			fmt.Printf("create route error: %s \n", err)
+			return
+		}
+		apiSet = append(apiSet, apis...)
+		if len(apis) < limit {
+			break
+		}
+		offset += limit
+	}
+
+	fmt.Printf("%d api\n", len(apiSet))
+
+	devcloudTitle := []string{"APi组名", "api名称", "请求URL", "转发url"}
+	var devcloudContent [][]string
+	for _, api := range apiSet {
+		fmt.Println("start ", api.Name)
+		apiInfo, err := ShowDetailsOfApiV2(*api.Id)
+		if err != nil {
+			fmt.Printf("api %s 查询明细失败\n", api.Name)
+			continue
+		}
+		if apiInfo.BackendApi == nil {
+			fmt.Printf("api %s 未找到后端api转发\n", api.Name)
+			continue
+		}
+		if api.ReqUri != apiInfo.BackendApi.ReqUri {
+			content := []string{*api.GroupName, api.Name, api.ReqUri, apiInfo.BackendApi.ReqUri}
+			devcloudContent = append(devcloudContent, content)
+		}
+	}
+	devcloudExcelContent := &ExcelContent{
+		Title:   devcloudTitle,
+		Content: devcloudContent,
+		OutFile: "1111111",
+	}
+	SaveExcel(devcloudExcelContent)
+}
+
+func ShowDetailsOfApiV2(apiID string) (*model.ShowDetailsOfApiV2Response, error) {
+	builder := NewApigClientBuilder()
+	regionID := "cn-east-3"
+	apigRegion := region.ValueOf(regionID)
+	client := apig.NewApigClient(builder.WithRegion(apigRegion).Build())
+
+	request := &model.ShowDetailsOfApiV2Request{}
+	request.InstanceId = ApigInstanceIDProd
+	request.ApiId = apiID
+	return client.ShowDetailsOfApiV2(request)
+}
+
+// 查询API
+func ListApisV2(offset, limit int32) ([]model.ApiInfoPerPage, error) {
+	builder := NewApigClientBuilder()
+	regionID := "cn-east-3"
+	apigRegion := region.ValueOf(regionID)
+	client := apig.NewApigClient(builder.WithRegion(apigRegion).Build())
+
+	request := &model.ListApisV2Request{}
+	request.InstanceId = ApigInstanceIDProd
+	request.Limit = &limit
+	offsetInt64 := int64(offset)
+	request.Offset = &offsetInt64
+	response, err := client.ListApisV2(request)
+	if err != nil {
+		return nil, err
+	}
+	return *response.Apis, nil
 }
 
 // 新建规则
@@ -36,13 +113,11 @@ func CreateApigRoute() {
 	paramBaseLocation := model.GetReqParamBaseLocationEnum()
 	paramBaseRequired := model.GetReqParamBaseRequiredEnum()
 
-
-
 	reqParams := model.ReqParamBase{
-		Name: "x-oauth-token",
-		Type: paramType.STRING,
-		Location: paramBaseLocation.HEADER,
-		Required: &paramBaseRequired.E_1,
+		Name:         "x-oauth-token",
+		Type:         paramType.STRING,
+		Location:     paramBaseLocation.HEADER,
+		Required:     &paramBaseRequired.E_1,
 		Enumerations: tea.String("test"),
 	}
 	reqParamsList := []model.ReqParamBase{reqParams}
@@ -53,26 +128,26 @@ func CreateApigRoute() {
 
 	status := model.GetBackendApiCreateVpcChannelStatusEnum().E_1
 	backendApiBody := &model.BackendApiCreate{
-		VpcChannelInfo: vpcChannelInfoBackendApi,
-		ReqProtocol: model.GetBackendApiCreateReqProtocolEnum().HTTPS,
-		ReqMethod: model.GetBackendApiCreateReqMethodEnum().ANY,
-		ReqUri: "/demo/api",
-		Timeout: 5000,
+		VpcChannelInfo:   vpcChannelInfoBackendApi,
+		ReqProtocol:      model.GetBackendApiCreateReqProtocolEnum().HTTPS,
+		ReqMethod:        model.GetBackendApiCreateReqMethodEnum().ANY,
+		ReqUri:           "/demo/api",
+		Timeout:          5000,
 		VpcChannelStatus: &status,
 	}
 
 	apiCreate := &model.ApiCreate{
-		Name:          "test-rule",
-		Type:          apiCreateTypeEnum.E_1,
-		ReqProtocol:   protocol.BOTH,
-		ReqMethod:     method.ANY,
-		ReqUri:        "/demo/api/v1",
-		AuthType:      authType.NONE,
-		MatchMode:     &matchType.SWA,
-		GroupId:       "84c3ca45f6754344b16fa40e9d4f1996",
-		ReqParams:     &reqParamsList,
-		BackendType:   backendType.HTTP,
-		BackendApi:    backendApiBody,
+		Name:        "test-rule",
+		Type:        apiCreateTypeEnum.E_1,
+		ReqProtocol: protocol.BOTH,
+		ReqMethod:   method.ANY,
+		ReqUri:      "/demo/api/v1",
+		AuthType:    authType.NONE,
+		MatchMode:   &matchType.SWA,
+		GroupId:     "84c3ca45f6754344b16fa40e9d4f1996",
+		ReqParams:   &reqParamsList,
+		BackendType: backendType.HTTP,
+		BackendApi:  backendApiBody,
 	}
 	request := &model.CreateApiV2Request{
 		InstanceId: ApigInstanceID,
@@ -84,7 +159,6 @@ func CreateApigRoute() {
 		return
 	}
 	fmt.Println("successful: ", resp.String())
-	return
 }
 
 // 查询分组
@@ -161,7 +235,7 @@ func ImportMicroService() {
 		Apis:        apiList,
 		Cors:        tea.Bool(true),
 		CceInfo: &model.MicroServiceInfoCceCreate{
-			ClusterId:    "552bd312-3d77-11ed-94b1-0255ac1002cd", //pub cce 集群
+			ClusterId:    CceClusterID, //pub cce 集群
 			Namespace:    "monitoring",
 			WorkloadType: model.GetMicroServiceInfoCceCreateWorkloadTypeEnum().STATEFULSET,
 			AppName:      "",
@@ -170,7 +244,7 @@ func ImportMicroService() {
 		},
 	}
 	request := &model.ImportMicroserviceRequest{
-		InstanceId: "0ab28a92697c4f1cac25e1296940c2a2", //apig  instance id
+		InstanceId: ApigInstanceID, //apig  instance id
 		Body:       requestBody,
 	}
 	resp, err := client.ImportMicroservice(request)
@@ -179,5 +253,3 @@ func ImportMicroService() {
 	}
 	fmt.Println(resp)
 }
-
-

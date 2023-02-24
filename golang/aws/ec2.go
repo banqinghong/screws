@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 )
 
-func NewClient() *ec2.Client {
+func NewEc2Client() *ec2.Client {
 	staticCredentialsProvider := credentials.NewStaticCredentialsProvider(AccessKeyId, SecretAccessKey, SessionToken)
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithCredentialsProvider(staticCredentialsProvider),
 		config.WithDefaultRegion("ap-northeast-1"))
@@ -61,7 +61,7 @@ func limitHost(num int32) func(options *ec2.DescribeHostsPaginatorOptions) {
 }
 
 func ListInstances() {
-	client := NewClient()
+	client := NewEc2Client()
 	input := &ec2.DescribeInstancesInput{}
 
 	inputPage := ec2.NewDescribeInstancesPaginator(client, input, limit(50))
@@ -104,7 +104,7 @@ func ListInstances() {
 }
 
 func ListRegions(){
-	client := NewClient()
+	client := NewEc2Client()
 	input := &ec2.DescribeRegionsInput{
 		AllRegions: tea.Bool(true),
 	}
@@ -117,7 +117,7 @@ func ListRegions(){
 }
 
 func ListHosts(){
-	client := NewClient()
+	client := NewEc2Client()
 	input := &ec2.DescribeHostsInput{}
 
 	inputPage := ec2.NewDescribeHostsPaginator(client, input, limitHost(5))

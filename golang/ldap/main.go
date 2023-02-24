@@ -3,22 +3,22 @@ package ldap
 import (
 	"errors"
 	"fmt"
-	"github.com/banqinghong/screws/golang/bfile"
-	"github.com/go-ldap/ldap/v3"
-	"github.com/miekg/dns"
 	"log"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/go-ldap/ldap/v3"
+	"github.com/miekg/dns"
 )
 
 type DnsRecord struct {
-	DataLength  string
-	Data        string
+	DataLength string
+	Data       string
 }
 
 type service struct {
-	cli  *ldap.Conn
+	cli *ldap.Conn
 }
 
 func Run() {
@@ -59,7 +59,7 @@ func (s *service) GetDnsZones() ([]string, error) {
 		BaseDN, // The base dn to search
 		ldap.ScopeSingleLevel, ldap.DerefAlways, 0, 0, false,
 		"(objectClass=dnsZone)", // The filter to apply
-		[]string{"dc"},  // A list attributes to retrieve
+		[]string{"dc"},          // A list attributes to retrieve
 		nil,
 	)
 	sr, err := s.cli.SearchWithPaging(searchRequest, 500)
@@ -75,13 +75,13 @@ func (s *service) GetDnsZones() ([]string, error) {
 }
 
 func (s *service) QueryDomainRecord(zone string) {
-	filePath := fmt.Sprintf("./result-%s-%d.json", zone, time.Now().Unix())
-    baseDN := fmt.Sprintf("DC=%s,%s", zone, BaseDN)
+	// filePath := fmt.Sprintf("./result-%s-%d.json", zone, time.Now().Unix())
+	baseDN := fmt.Sprintf("DC=%s,%s", zone, BaseDN)
 	searchRequest := ldap.NewSearchRequest(
 		baseDN, // The base dn to search
 		ldap.ScopeWholeSubtree, ldap.DerefAlways, 0, 0, false,
 		"(objectClass=*)", // The filter to apply
-		[]string{"dnsRecord", "dNSTombstoned", "name", "instanceType", "objectClass"},  // A list attributes to retrieve
+		[]string{"dnsRecord", "dNSTombstoned", "name", "instanceType", "objectClass"}, // A list attributes to retrieve
 		nil,
 	)
 
@@ -118,13 +118,14 @@ func (s *service) QueryDomainRecord(zone string) {
 			}
 
 			content := fmt.Sprintf("%s: %s -- %s\n", domainName, domainInfo.Type, domainInfo.Address)
-			bfile.Append2File(content, filePath)
+			fmt.Println("content: ", content)
+			// bfile.Append2File(content, filePath)
 		}
 	}
 }
 
 // 过滤 JM IT等开头的办公网机器地址
-func isHostName (nameByDN string) (bool, error) {
+func isHostName(nameByDN string) (bool, error) {
 	return regexp.Match("^(JM|IT|GM|YBIT|jm|YB|it20|WIN|VDI).*", []byte(nameByDN))
 }
 
@@ -142,9 +143,9 @@ func getDomainNameByDN(dn string) (string, error) {
 }
 
 type domainInfo struct {
-	Address  string
-	Type     string
-	Name     string
+	Address string
+	Type    string
+	Name    string
 }
 
 //func queryDomainAddr(domain string) (*domainInfo, error) {
@@ -178,7 +179,7 @@ func queryDomainInfo(domain string) (*domainInfo, error) {
 	}
 
 	m := &dns.Msg{}
-	m.SetQuestion(domain+ ".", dns.TypeA)
+	m.SetQuestion(domain+".", dns.TypeA)
 	r, _, err := c.Exchange(m, DomainServer)
 	if err != nil {
 		fmt.Printf("query dns[%s] failed: %s\n", domain, err)
