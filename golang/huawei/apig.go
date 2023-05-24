@@ -183,6 +183,18 @@ func ListApigGroup() {
 
 // 查询证书
 func ListSslCert() {
+	builder := NewApigClientBuilder()
+	regionID := "cn-east-3"
+	apigRegion := region.ValueOf(regionID)
+	client := apig.NewApigClient(builder.WithRegion(apigRegion).Build())
+	request := &model.ListCertificatesV2Request{}
+	request.InstanceId = "8900209916fd497b93f3fd7fcb2f5f82"
+	response, err := client.ListCertificatesV2(request)
+	if err == nil {
+        fmt.Printf("%+v\n", response)
+    } else {
+        fmt.Println(err)
+    }
 }
 
 // 创建分组
@@ -252,4 +264,75 @@ func ImportMicroService() {
 		fmt.Printf("err in import microservice,%s \n", err.Error())
 	}
 	fmt.Println(resp)
+}
+
+func TestCreateVpcChannelV2() {
+	ak := AccessKey
+	sk := AccessSecret
+
+	auth := basic.NewCredentialsBuilder().
+		WithAk(ak).
+		WithSk(sk).
+		Build()
+
+	client := apig.NewApigClient(
+		apig.ApigClientBuilder().
+			WithRegion(region.ValueOf("cn-east-3")).
+			WithCredential(auth).
+			Build())
+
+	request := &model.CreateVpcChannelV2Request{}
+	request.InstanceId = ApigInstanceID
+	cceInfoMicroserviceInfo := &model.MicroServiceInfoCceBase{
+		ClusterId:    CceDevopsPub,
+		Namespace:    "qa-stage--devops-prod",
+		WorkloadType: model.GetMicroServiceInfoCceBaseWorkloadTypeEnum().DEPLOYMENT,
+		AppName:      "banqinghong-demo",
+	}
+	serviceTypeMicroserviceInfo := model.GetMicroServiceCreateServiceTypeEnum().CCE
+	microserviceInfobody := &model.MicroServiceCreate{
+		ServiceType: &serviceTypeMicroserviceInfo,
+		CceInfo:     cceInfoMicroserviceInfo,
+	}
+	timeoutVpcHealthConfig := int32(5)
+	vpcHealthConfigbody := &model.VpcHealthConfig{
+		ThresholdNormal:   int32(2),
+		Protocol:          model.GetVpcHealthConfigProtocolEnum().TCP,
+		ThresholdAbnormal: int32(5),
+		TimeInterval:      int32(10),
+		Timeout:           &timeoutVpcHealthConfig,
+	}
+	var listMicroserviceLabelsMemberGroups = []model.MicroserviceLabel{
+		{
+			LabelName:  "appNameWithSuffix",
+			LabelValue: "banqinghong-demo--cfvc0irlv24bmhb7n2mg",
+		},
+	}
+	memberGroupWeightMemberGroups := int32(100)
+	microservicePortMemberGroups := int32(80)
+	var listMemberGroupsbody = []model.MemberGroupCreate{
+		{
+			MemberGroupName:    "banqinghong-demo--cfvc0irlv24bmhb7n2mg",
+			MemberGroupWeight:  &memberGroupWeightMemberGroups,
+			MicroservicePort:   &microservicePortMemberGroups,
+			MicroserviceLabels: &listMicroserviceLabelsMemberGroups,
+		},
+	}
+	typeVpcCreate := int32(3)
+	request.Body = &model.VpcCreate{
+		Type:             &typeVpcCreate,
+		MicroserviceInfo: microserviceInfobody,
+		VpcHealthConfig:  vpcHealthConfigbody,
+		MemberGroups:     &listMemberGroupsbody,
+		Name:             "dc-banqinghong-demo-prod-1678343536",
+		Port:             int32(80),
+		BalanceStrategy:  model.GetVpcCreateBalanceStrategyEnum().E_1,
+		MemberType:       model.GetVpcCreateMemberTypeEnum().IP,
+	}
+	response, err := client.CreateVpcChannelV2(request)
+	if err == nil {
+		fmt.Printf("successful: %+v\n", response)
+	} else {
+		fmt.Println("failed: ", err)
+	}
 }

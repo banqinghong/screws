@@ -46,7 +46,7 @@ func Run() {
 	//fmt.Println("json: ", string(jsonStr))
 
 	fmt.Printf("get %d zone\n", len(zones))
-	s.QueryDomainRecord("xgimi.com")
+	// s.QueryDomainRecord("xgimi.com")
 	//queryDomainInfo("redis1.qa.xgimi.com")
 	//for _, zone := range zones {
 	//	fmt.Printf("start %s\n", zone)
