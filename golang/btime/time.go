@@ -1,6 +1,7 @@
 package btime
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -45,4 +46,23 @@ func LastDayOfMonthAfterAddDate(t time.Time, years int, months int) time.Time {
 	// AddDate后月份的最后一个时刻
 	lastDayOfMonthAfterAddDate := firstDayOfMonthAfterAddDate.AddDate(0, 1, 0).Add(-time.Nanosecond)
 	return lastDayOfMonthAfterAddDate
+}
+
+func GetNearestTime(d time.Duration) time.Time {
+	nowTime := time.Now()
+	fmt.Println("now: ", nowTime.Format("2006-01-02 15:04:05"))
+
+	// fmt.Println("unix: ", nowTime.UnixMilli())
+
+	nearestTime := nowTime.Round(d)
+	fmt.Println("1 nearestTime: ", nearestTime.Format("2006-01-02 15:04:05"))
+
+	// 如果大于则减去5分钟否则不需要
+	if nearestTime.Unix() > nowTime.Unix() {
+		nearTime := nearestTime.Add(-d)
+		fmt.Println("large nearestTime: ", nearTime.Format("2006-01-02 15:04:05"))
+		return nearTime
+	}
+	fmt.Println("less nearestTime: ", nearestTime.Format("2006-01-02 15:04:05"))
+	return nearestTime
 }

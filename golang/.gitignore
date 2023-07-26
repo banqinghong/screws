@@ -1,3 +1,5 @@
 *.idea
 const.go
 *.json
+dist
+dist/*

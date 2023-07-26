@@ -8,10 +8,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
-	"github.com/banqinghong/screws/golang/betcd"
+	"github.com/banqinghong/screws/golang/huawei"
 	"github.com/tjfoc/gmsm/x509"
 )
 
@@ -60,9 +61,33 @@ func main() {
 	// fmt.Println("hash: ", Hash("salary-backend--ce8u44rlv2468mu4htcg"))
 	// rdsAddressSplit()
 	// getLastMonth("2023-04")
-	betcd.GetKVWithPrefix("jarvis.jobcenter/cronjob/k8s-devops-hw-qa")
+	// huawei.ListAllApis()
+	// apollo.GetApolloConfig()
+	// huawei.UploadFileToObs("service_cost/2023-04/xxxxxx.xlsx", "./dist/1111111.xlsx")
+	// err := newDownloadDir("./download")
+	// if err != nil {
+	// 	fmt.Printf("create dir %s\n", err)
+	// }
+	// betcd.GetKVWithPrefix("jarvis.jobcenter/cronjob/k8s-devops-hw-qa")
+
+	huawei.ShowDomainStats()
+	// btime.GetNearestTime(1 * time.Minute)
 
 	fmt.Println("main ending")
+}
+
+func newDownloadDir(DownloadDir string) error {
+	// baseDir, err := os.Getwd()
+	// if err != nil {
+	// 	return err
+	// }
+	// path := filepath.Join(baseDir, DownloadDir)
+	_, err := os.Stat(DownloadDir)
+	if err != nil {
+		fmt.Println("new-------------")
+		return os.Mkdir(DownloadDir, 0755)
+	}
+	return nil
 }
 
 // 计算hash值

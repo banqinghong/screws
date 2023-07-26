@@ -31,17 +31,26 @@ func SaveExcel(excel *ExcelContent) {
 	// Create a new sheet.
 	index := f.NewSheet(defaultSheet)
 
-	style, err := f.NewStyle(`{"font":{"family":"宋体","size":12}}`)
+	style, err := f.NewStyle(`{"font":{"family":"宋体","size":12},"alignment":{"horizontal":"center","vertical":"center"}, "border":[{"type": "left", "style": 2, "color": "#000000"}, {"type": "right", "style": 2, "color": "#000000"}, {"type": "top", "style": 2, "color": "#000000"}, {"type": "bottom", "style": 2, "color": "#000000"}]}`)
 	if err != nil {
 		fmt.Println(err)
 	}
+	titleStyle, err := f.NewStyle(`{"font":{"family":"宋体","size":16},"alignment":{"horizontal":"center","vertical":"center"}, "fill":{"type":"gradient","pattern":1,"color":["#6495ED","#6495ED"],"shading":1}}`)
+	if err != nil {
+		fmt.Println(err)
+	}
+	f.MergeCell(defaultSheet, "G2", "G10")
+	f.SetCellValue(defaultSheet, "G2", "测试文字")
+	f.SetCellStyle(defaultSheet, "G2", "G10", style)
+
+	f.SetColWidth(defaultSheet, "A", "H", 26)
 
 	// 写入title
 	for k, v := range excel.Title {
 		//fmt.Printf("column: %s\n", column)
 		cell := toCharStr(k) + "1"
 		f.SetCellValue(defaultSheet, cell, v)
-		f.SetCellStyle(defaultSheet, cell, cell, style)
+		f.SetCellStyle(defaultSheet, cell, cell, titleStyle)
 	}
 	f.SetActiveSheet(index)
 	for i, columnContent := range excel.Content {

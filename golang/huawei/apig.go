@@ -39,8 +39,9 @@ func ListAllApis() {
 	fmt.Printf("%d api\n", len(apiSet))
 
 	devcloudTitle := []string{"APi组名", "api名称", "请求URL", "转发url"}
+	devcloudTitle = []string{"应用名", "独占成本", "分摊成本", "容器成本", "总成本"}
 	var devcloudContent [][]string
-	for _, api := range apiSet {
+	for _, api := range apiSet[:10] {
 		fmt.Println("start ", api.Name)
 		apiInfo, err := ShowDetailsOfApiV2(*api.Id)
 		if err != nil {
@@ -191,10 +192,10 @@ func ListSslCert() {
 	request.InstanceId = "8900209916fd497b93f3fd7fcb2f5f82"
 	response, err := client.ListCertificatesV2(request)
 	if err == nil {
-        fmt.Printf("%+v\n", response)
-    } else {
-        fmt.Println(err)
-    }
+		fmt.Printf("%+v\n", response)
+	} else {
+		fmt.Println(err)
+	}
 }
 
 // 创建分组
@@ -205,7 +206,7 @@ func CreateApigGroup() {
 	client := apig.NewApigClient(builder.WithRegion(apigRegion).Build())
 
 	apiGroupCreate := &model.ApiGroupCreate{
-		Name: "devcloud-gateway-test-202205101436.dev.xgimi.com",
+		Name: "devcloud-gateway-test-202205101436.dev.example.com",
 	}
 	request := &model.CreateApiGroupV2Request{
 		InstanceId: ApigInstanceID,

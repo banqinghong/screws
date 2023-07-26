@@ -16,15 +16,16 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.12.9
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.49.1
 	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.18.28
-	github.com/aws/aws-sdk-go-v2/service/mq v1.14.10 // indirect
+	github.com/aws/aws-sdk-go-v2/service/mq v1.14.10
 	github.com/confluentinc/confluent-kafka-go v1.9.1
 	github.com/go-ldap/ldap/v3 v3.4.4
+	github.com/huaweicloud/huaweicloud-sdk-go-obs v3.23.4+incompatible // indirect
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.29
 	github.com/miekg/dns v1.1.49
 	github.com/prometheus/client_golang v1.12.1
-	github.com/shima-park/agollo v1.2.13
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.446
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.0.446
 	github.com/tjfoc/gmsm v1.4.1
-	go.etcd.io/etcd/client/v3 v3.5.9 // indirect
+	go.etcd.io/etcd/client/v3 v3.5.9
+	google.golang.org/appengine v1.6.7 // indirect
 )
