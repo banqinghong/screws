@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/banqinghong/screws/golang/huawei"
+	"github.com/banqinghong/screws/golang/brate"
 	"github.com/tjfoc/gmsm/x509"
 )
 
@@ -70,9 +70,10 @@ func main() {
 	// }
 	// betcd.GetKVWithPrefix("jarvis.jobcenter/cronjob/k8s-devops-hw-qa")
 
-	huawei.ShowDomainStats()
+	// huawei.ListWafHost()
+	brate.RateTest()
 	// btime.GetNearestTime(1 * time.Minute)
-
+	time.Sleep(10 * time.Minute)
 	fmt.Println("main ending")
 }
 

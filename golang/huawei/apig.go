@@ -39,7 +39,7 @@ func ListAllApis() {
 	fmt.Printf("%d api\n", len(apiSet))
 
 	devcloudTitle := []string{"APi组名", "api名称", "请求URL", "转发url"}
-	devcloudTitle = []string{"应用名", "独占成本", "分摊成本", "容器成本", "总成本"}
+	// devcloudTitle := []string{"应用名", "独占成本", "分摊成本", "容器成本", "总成本"}
 	var devcloudContent [][]string
 	for _, api := range apiSet[:10] {
 		fmt.Println("start ", api.Name)
